@@ -28,16 +28,17 @@
     <h2>邮箱验证找回</h2>
     <form>
       <div class="user-box">
-        <input type="password" name="" required="" v-model="user.email" @focus="animate('focusEmail')"
+        <input type="text" name="" required="" v-model="user.email" @focus="animate('focusEmail')"
                ref="forgetPwd" :placeholder="mod.forgetPwdMsg" @blur="blur">
         <label :style="mod.emailColor">{{ mod.emailLabel }}</label>
       </div>
       <div class="user-box">
-        <input type="text" name="" required="" v-model="user.verificationCode" @focus="animate('focusVerificationCode')">
+        <input type="text" name="" required="" v-model="user.verificationCode" @focus="animate('focusVerificationCode')"
+        ref="forgetPwdCode">
         <label :style="mod.verificationCodeColor">{{ mod.verificationCodeLabel }}</label>
         <a href="#" :style="mod.forgetInterval" @click="sendMailTo">{{ mod.sendMailForgetMsg }}</a>
       </div>
-      <a href="#" class="register-commit" @click="commit('register')">
+      <a href="#" class="register-commit" @click="commit('forget')">
         <span></span>
         <span></span>
         <span></span>
@@ -54,7 +55,7 @@
     <h2>登录验证</h2>
     <form>
       <div class="user-box">
-        <input type="text" name="" required="" v-model="mod.verificationCode" ref="loginValidate">
+        <input type="text" name="" required="" v-model="user.verificationCode" ref="loginValidate">
         <label :style="mod.verificationCodeColor">{{ mod.verificationCodeLabel }}</label>
         <a href="#" @click="sendMail('loginValidate')" :style="mod.loginValidateInterval">{{ mod.sendMailLoginValidateMsg }}</a>
       </div>
@@ -87,7 +88,8 @@
         <label :style="mod.emailColor">{{ mod.emailLabel }}</label>
       </div>
       <div class="user-box">
-        <input type="text" name="" required="" v-model="user.verificationCode" @focus="animate('focusVerificationCode')">
+        <input type="text" name="" required="" v-model="user.verificationCode" @focus="animate('focusVerificationCode')"
+        ref="registerCode">
         <label :style="mod.verificationCodeColor">{{ mod.verificationCodeLabel }}</label>
         <a href="#" @click="sendMailTo('register')" :style="mod.registerInterval">{{ mod.sendMailRegisterMsg }}</a>
       </div>
@@ -109,7 +111,7 @@
 
 <script>
 import {ref, reactive, watch, nextTick} from 'vue';
-import {userRegister, sendMail} from '@/api/user';
+import {userRegister, sendMail, userLogin, userLoginValidate} from '@/api/user';
 import {
   Loading,
 
@@ -157,13 +159,14 @@ export default {
     loginValidateWait: 0,
     loginValidateInterval: '',
     // 组件默认消息
-    forgetPwdMsg: ''
+    forgetPwdMsg: '',
+    userId: ''
   })
   watch(() => user.verificationCode, (newValue,oldValue) => {
       if (newValue.length > 4 ) {
         user.verificationCode = oldValue;
       }
-      if (newValue.charCodeAt(newValue.length - 1) <= 48 || newValue.charCodeAt(newValue.length - 1) >= 58) {
+      if (newValue.charCodeAt(newValue.length - 1) <= 47 || newValue.charCodeAt(newValue.length - 1) >= 58) {
         console.log("newValue"+newValue+","+"oldValue"+oldValue+","+"最新一个字符:"+newValue.charCodeAt(newValue.length - 1))
         user.verificationCode = oldValue;
       }
@@ -187,8 +190,14 @@ export default {
         mod.passwordLabel = '密码必须至少为字母加数字且在6-16个字符之间！！'
         mod.passwordColor = 'color: #F1082CFF'
       }
+
       if (msg === 'loginValidate' && user.userName !== '' && user.password !== ''
           && userNameReg.test(user.userName) && passwordReg.test(user.password)) {
+        userLogin(user.userName, user.password, null).then((res) => {
+          sendMailTo('loginValidate', res.mail)
+          console.log("id:{}",res.id)
+          mod.userId = res.id
+        })
         toLoginValidate()
         if (validate.value !== null) {
           clearTimeout(validate)
@@ -196,13 +205,7 @@ export default {
         sendMailTo('loginValidate')
       }
       if (msg === 'register') {
-        if (user.email === '') {
-          mod.emailLabel = '邮箱不能为空！！'
-          mod.emailColor = 'color: #F1082CFF'
-        } else if (!emailRef.test(user.email)) {
-          mod.emailLabel = '邮箱格式错误！！'
-          mod.emailColor = 'color: #F1082CFF'
-        }
+        if (!testEmail()) return;
         if (user.verificationCode === '') {
           mod.verificationCodeLabel = '验证码不能为空！！'
           mod.verificationCodeColor = 'color: #F1082CFF'
@@ -222,27 +225,63 @@ export default {
       if (user.verificationCode === '') {
         mod.verificationCodeLabel = '验证码不能为空！！'
         mod.verificationCodeColor = 'color: #F1082CFF'
+        return;
       }
+    }
+    if (msg === 'login') {
+      if (user.verificationCode === '') {
+        mod.verificationCodeLabel = '验证码不能为空！！'
+        mod.verificationCodeColor = 'color: #F1082CFF'
+        return;
+      }
+      console.log("userId:" + mod.userId)
+      userLoginValidate(user.verificationCode, mod.userId).then((res) => {
+        console.log("登录结果:{}",res)
+      })
     }
   }
   // 邮件发送
-  function sendMailTo(msg) {
+    const forgetPwdCode = ref(null)
+    const registerCode = ref(null)
+    function sendMailTo(msg, mail) {
       if (msg === 'register') {
+        if (!testEmail()) return;
+        nextTick(() => {registerCode.value.focus()})
         let reg = /\%40/;
         let result = user.email.replace(reg,'@');
         sendMail(result)
         mod.registerWait = 60
         setRegisterTime()
       } else if (msg === 'loginValidate') {
-
         mod.loginValidateWait= 60
-        setLoginValidateTime()
+        var str = mail
+        for (var i = 2;i < mail.length - 7;i ++ ) {
+          str = replaceStr(str, i, 'x')
+        }
+        setLoginValidateTime(str)
+        sendMail(mail)
       } else {
+        if (!testEmail()) return;
+        nextTick(() => {forgetPwdCode.value.focus()})
         mod.forgetWait = 60
         setForgetTime()
       }
   }
-
+  function replaceStr(str, index, char) {
+    return str.substring(0, index) + char + str.substring(index + 1);
+  }
+  function testEmail() {
+    if (user.email === '') {
+      mod.emailLabel = '邮箱不能为空！！'
+      mod.emailColor = 'color: #F1082CFF'
+      return false;
+    } else if (!emailRef.test(user.email)) {
+      mod.emailLabel = '邮箱格式错误！！'
+      mod.emailColor = 'color: #F1082CFF'
+      return false;
+    }
+    return true
+  }
 
   // 验证码时间限制
     //#region
@@ -271,16 +310,16 @@ export default {
       }
   }
     let validate = ref(null)
-    function setLoginValidateTime() {
+    function setLoginValidateTime(str) {
       if (mod.loginValidateWait === 0) {
         mod.loginValidateInterval = ''
         mod.loginValidateWait = 60;
         mod.sendMailLoginValidateMsg = '发送验证码'
       } else {
         mod.loginValidateInterval = 'pointer-events: none;'
-        mod.sendMailLoginValidateMsg = '已发送'+ mod.loginValidateWait + 's'
+        mod.sendMailLoginValidateMsg = '已发送至密保邮箱'+ str + "  " +mod.loginValidateWait + 's'
         mod.loginValidateWait--;
-        validate = setTimeout(function () { setLoginValidateTime() }, 1000)
+        validate = setTimeout(function () { setLoginValidateTime(str) }, 1000)
       }
   }
 
@@ -384,7 +423,9 @@ export default {
       toForgetPwd,
       sendMailTo,
       loginValidate,
-      forgetPwd
+      forgetPwd,
+      forgetPwdCode,
+      registerCode
     }
   }
 }

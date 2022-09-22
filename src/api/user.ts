@@ -10,12 +10,11 @@ export function sendMail(to) {
 }
 
 // 查询用户列表
-export function userLogin(userName, password, code, uuid) {
+export function userLogin(userName, password, code) {
   const data = {
     userName,
     password,
-    code,
-    uuid
+    code
   }
   return request({
     url: '/login',
@@ -26,7 +25,21 @@ export function userLogin(userName, password, code, uuid) {
     data: data
   })
 }
+export function userLoginValidate(code, userId) {
 
+  const data = {
+    code,
+    userId
+  }
+  return request({
+    url: '/loginValidate',
+    headers: {
+      isToken: false
+    },
+    method: 'post',
+    data: data
+  })
+}
 // 删除用户
 export function userLogout() {
   return request({
