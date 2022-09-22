@@ -1,0 +1,49 @@
+Arguments: 
+  D:\JAVA\Frame\nodejs\node.exe C:\Users\86187\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add vue-router@4
+
+PATH: 
+  C:\Python310\Scripts\;C:\Python310\;D:\VMware Workstation\bin\;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;D:\JAVA\JDK\jdk1.8.0_321\bin;D:\JAVA\JDK\jdk1.8.0_321\jre\bin;C:\MinGW\bin\;C:\MinGW\mingw32\bin\;C:\Program Files\dotnet\;C:\Maven\apache-maven-3.6.3\bin;D:\SGBlog\资源\前端工程\sg-blog-vue\npm;C:\Pr;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;D:\JAVA\Frame\git\cmd;D:\JAVA\Frame\nodejs;C:\ProgramData\chocolatey\bin;C:\windows\system32;D:\JAVA\Frame\nodejs\node_global;C:\Program Files\MySQL\MySQL Shell 8.0\bin\;C:\Java\mingw64\bin;";;C:\Users\86187\AppData\Local\Programs\Microsoft VS Code\bin";C:\Program Files\MySQL\MySQL Server 8.0\bin;C:\Users\86187\AppData\Local\Programs\Microsoft VS Code\bin;E:\jb\.venv\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;C:\Users\86187\AppData\Roaming\npm
+
+Yarn version: 
+  1.22.19
+
+Node version: 
+  16.15.1
+
+Platform: 
+  win32 ia32
+
+Trace: 
+  Error: EPERM: operation not permitted, unlink 'D:\JAVA\Project\onlinejudgevue\node_modules\esbuild-windows-32\esbuild.exe'
+
+npm manifest: 
+  {
+    "name": "onlinejudgevue",
+    "private": true,
+    "version": "1.0.0",
+    "type": "module",
+    "scripts": {
+      "dev": "vite",
+      "build": "vue-tsc --noEmit && vite build",
+      "preview": "vite preview"
+    },
+    "dependencies": {
+      "esbuild": "^0.15.7",
+      "vue": "^3.2.37"
+    },
+    "devDependencies": {
+      "@vitejs/plugin-vue": "^3.1.0",
+      "typescript": "^4.6.4",
+      "vite": "^3.1.0",
+      "vue-tsc": "^0.40.4"
+    },
+    "main": "index.js",
+    "author": "zhenyu",
+    "license": "MIT"
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
