@@ -4,7 +4,7 @@ import router from '../router'
 import store from '../store'
 import { getToken } from './auth'
 import errorCode from './errorCode'
-
+import { Notify } from 'quasar'
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
 
 var isHandleData = true;
@@ -85,8 +85,16 @@ service.interceptors.response.use(res => {
     })
     return Promise.reject(new Error(msg))
   } else if (code !== 200) {
+    // Notify.registerType('failed', {
+    //   icon: 'negative',
+    //   progress: true,
+    //   color: 'red',
+    //   textColor: 'white',
+    //   classes: 'glossy'
+    // })
+
     ElNotification({
-      title: 'Error',
+      title: '错误',
       message: msg,
       type: 'error',
     })
@@ -110,7 +118,7 @@ service.interceptors.response.use(res => {
     ElMessage({
       message: message,
       type: 'error',
-      duration: 5 * 1000
+      duration: 5 * 1000,
     })
     return Promise.reject(error)
   }

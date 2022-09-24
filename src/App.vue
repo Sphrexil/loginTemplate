@@ -1,4 +1,3 @@
-
 <template>
   <div>
     <router-view/>
@@ -6,11 +5,13 @@
 </template>
 
 <script setup lang="ts">
+import header from '@/components/header.vue'
+
 
 </script>
 
-<style lang='less' scoped type='text/css'>
-
+<style lang="scss" scoped>
+body.body--dark {
+  background: #000
+}
 </style>
-
-
