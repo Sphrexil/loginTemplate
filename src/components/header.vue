@@ -20,16 +20,16 @@
 
         <!--路由页-->
         <q-tabs align="left">
-          <q-route-tab to="/page1" label="Page One" />
-          <q-route-tab to="/page2" label="Page Two" />
-          <q-route-tab to="/page3" label="Page Three" />
+          <q-route-tab to="/" label="题库" />
+          <q-route-tab to="/community" label="社区" />
+          <q-route-tab to="/background" label="Page Three" />
         </q-tabs>
 
 
         <q-space />
         <!--搜索栏-->
         <div class="YL__toolbar-input-container row no-wrap">
-          <q-input dense rounded outlined v-model="search" placeholder="Search" class="bg-white col" />
+          <q-input dense rounded outlined v-model="search" placeholder="搜索题目或者文章" class="bg-white col" />
           <q-btn color="grey-8" text-color="grey-8"  round flat icon="search" unelevated >
             <q-tooltip>search</q-tooltip>
           </q-btn>
@@ -342,5 +342,5 @@ export default {
     font-size: .75rem
 
     &:hover
-      color: #000
+      color: #faf8f8
 </style>

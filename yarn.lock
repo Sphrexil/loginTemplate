@@ -616,6 +616,16 @@ glob-parent@~5.1.2:
   dependencies:
     is-glob "^4.0.1"
 
+greensock@^1.20.2:
+  version "1.20.2"
+  resolved "https://registry.npmmirror.com/greensock/-/greensock-1.20.2.tgz#6a192bf46b2ef27d5bf96fda062f7fdc41b8f488"
+  integrity sha512-ru69ioh8OalFCsBL1qPjqHtm/lAi9hqsuONYd1w5R3gvH2DjkFfuH3NWA+zTI6HFtJkOjTD0JJrKtJlc76E5VQ==
+
+gsap@^3.11.1:
+  version "3.11.1"
+  resolved "https://registry.npmmirror.com/gsap/-/gsap-3.11.1.tgz#2d99acf9c9ad02f3b6668bfab7567d31f217a91e"
+  integrity sha512-UKuJ0UPhntFHMwT6URFQ4cTQv88xc7Kd9Dhxt7qX9IPhC+d+/a5wKW5E5Vn33hZ53nBI1JfApcEbzKgXkcuPZw==
+
 has-flag@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/has-flag/-/has-flag-3.0.0.tgz#b5d454dc2199ae225699f3467e5a07f3b955bafd"

@@ -11,7 +11,8 @@ export const state = {
     loading: false,
     themeObj: 0,//主题
     keywords:'',//关键词
-    baseURL:'http://localhost:11000/'
+    baseURL:'http://localhost:11000',
+    problemBaseURL: 'http://localhost:9000'
 }
 
 export default new Vuex.Store({

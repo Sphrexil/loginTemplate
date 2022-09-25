@@ -8,6 +8,8 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Home'
   },
   { path: '/login', component: () => import('@/pages/login/login.vue') }  ,
+  {path: '/background', component: () => import('@/components/backgroud.vue')},
+  {path: '/content/:id', props: true, component: () => import('@/components/problemDetails.vue')}
 ]
 
 const scrollBehavior = (to, from, savePosition) => { // 在点击浏览器的“前进/后退”，或者切换导航的时候触发。

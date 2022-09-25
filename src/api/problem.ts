@@ -1,5 +1,5 @@
 // @ts-ignore
-import request from '@/utils/request'
+import request from '@/utils/requestProblem'
 
 // 查询问题列表
 export function addProblem(data) {
