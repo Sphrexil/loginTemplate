@@ -184,7 +184,7 @@ import { ref,reactive } from 'vue'
 // import { fabYoutube } from '@quasar/extras/fontawesome-v6'
 import {userLogout} from '@/api/user.ts'
 import { useRouter } from "vue-router";
-import {removeToken} from '@/utils/auth.js'
+import {removeToken, getToken} from '@/utils/auth.js'
 import {ElMessageBox, ElMessage} from 'element-plus'
 export default {
 
@@ -205,12 +205,17 @@ export default {
         type: 'warning'
       }).then(() => {
         // console.log(that.$route.path);
-
+        if (!getToken()) {
+          localStorage.removeItem('userInfo');
+          user.haslogin = false;
+          ElMessage.success('退出成功!')
+          router.push({path: '/'})
+          window.location.reload();
+        }
         userLogout().then((response)=>{
           removeToken()
           localStorage.removeItem('userInfo');
           user.haslogin = false;
-
           ElMessage.success('退出成功!')
           router.push({path: '/'})
           window.location.reload();

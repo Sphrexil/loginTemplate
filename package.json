@@ -11,6 +11,7 @@
   "main": "index.js",
   "dependencies": {
     "@quasar/extras": "^1.0.0",
+    "@vueup/vue-quill": "^1.0.0-alpha.40",
     "axios": "^0.27.2",
     "element-plus": "^2.2.16",
     "element-ui": "^2.15.10",
@@ -22,6 +23,7 @@
     "quasar": "^2.8.2",
     "sass": "^1.54.9",
     "vue": "^3.2.37",
+    "vue-quill-editor": "^3.0.6",
     "vue-router": "4",
     "vuex": "^4.0.2"
   },

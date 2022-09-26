@@ -10,11 +10,12 @@ export function sendMail(to) {
 }
 
 // 查询用户列表
-export function userLogin(userName, password, code) {
+export function userLogin(userName, password, code, localExist) {
   const data = {
     userName,
     password,
-    code
+    code,
+    localExist
   }
   return request({
     url: '/login',

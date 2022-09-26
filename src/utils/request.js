@@ -63,7 +63,7 @@ service.interceptors.response.use(res => {
   const code = res.data.code || 200
   // 获取错误信息
   const msg = errorCode[code] || res.data.msg || errorCode['default']
-  if (code === 401) {
+  if (code === 2001) {
     ElMessageBox.confirm('登录状态已过期，您可以继续留在该页面，或者重新登录', '系统提示', {
       confirmButtonText: '重新登录',
       cancelButtonText: '取消',
@@ -73,7 +73,7 @@ service.interceptors.response.use(res => {
 
       localStorage.setItem('logUrl', router.currentRoute.fullPath);
       router.push({
-        path: '/Login?login=1'
+        path: '/Login'
       });
 
     }).catch(() => { })

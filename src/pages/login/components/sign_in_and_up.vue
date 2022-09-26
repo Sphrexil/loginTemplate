@@ -161,6 +161,7 @@ export default {
       // 组件默认消息
       forgetPwdMsg: '',
       userId: '',
+      localExist: false
     })
     watch(() => user.verificationCode, (newValue, oldValue) => {
       if (newValue.length > 4) {
@@ -191,7 +192,12 @@ export default {
       }
       if (msg === 'loginValidate' && user.userName !== '' && user.password !== ''
           && userNameReg.test(user.userName) && passwordReg.test(user.password)) {
-        userLogin(user.userName, user.password, null).then((res) => {
+        var flag = null
+        if (!localStorage.getItem("userInfo")) {
+          flag = mod.localExist
+        }
+        userLogin(user.userName, user.password, null,flag).then((res) => {
+
           if (res === null) {
             return;
           }
@@ -244,15 +250,10 @@ export default {
         userLoginValidate(user.verificationCode, mod.userId).then((res) => {
           console.log(res)
           setToken(res.token)
-
           ElMessage.success('登陆成功')
           console.log(res.userInfo)
           localStorage.setItem("userInfo", JSON.stringify(res.userInfo))
-          if (localStorage.getItem('logUrl')) {
-            router.push({path: localStorage.getItem('logUrl')});
-          } else {
-            router.push({path: '/'});
-          }
+          router.push({path: '/'});
           console.log("登录结果:{}", res)
         })
       }

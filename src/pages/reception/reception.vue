@@ -80,10 +80,11 @@
 <script>
 import header from '@/components/header.vue'
 import background from '@/components/backgroud.vue'
+import middle from '@/components/middle.vue'
 import {reactive} from "vue";
 import {listProblem} from "@/api/problem.ts";
 export default {
-  components:{brain : header, bcg: background},
+  components:{brain : header, bcg : background, mid : middle},
   setup() {
     const problem = reactive({
       list: [],
@@ -197,7 +198,6 @@ export default {
   margin-top: -650px;
   margin-left: -70%;
   overflow: visible;
-
 }
 .child_items{
   display: inline-block;
