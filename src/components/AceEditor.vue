@@ -32,6 +32,14 @@ import "ace-builds/src-noconflict/snippets/golang";
 import "ace-builds/src-noconflict/mode-golang";
 import "ace-builds/src-noconflict/snippets/python";
 import "ace-builds/src-noconflict/mode-python";
+
+// keyBinding
+import "ace-builds/src-min-noconflict/keybinding-vim";
+import "ace-builds/src-min-noconflict/keybinding-emacs";
+import "ace-builds/src-min-noconflict/keybinding-sublime";
+import "ace-builds/src-min-noconflict/keybinding-vscode";
+
+
 export default {
   name: "CodeEditor",
   emits: ["update:value"],
@@ -59,6 +67,14 @@ export default {
       type: String,
       default: "github",
     },
+    keyBinding: {
+      type: String,
+      default: "vscode",
+    },
+    tabSize: {
+      type: Number,
+      default: 2,
+    }
   },
   setup(props, { emit }) {
     let editor = null;
@@ -72,9 +88,11 @@ export default {
       showPrintMargin: false,
       fontSize: 14,
       readOnly: props.readonly ? props.readonly : false,
+      keyboardHandler: "ace/keyboard/" + (props.keyBinding ? props.keyBinding : "vscode")
     })
     //切换语言
     //editor.getSession().setMode(modelPath)
+
 
     function initialize() {
       if (editor) {
@@ -82,18 +100,22 @@ export default {
         editor.destroy();
       }
       //初始化
-
       ace.config.set("basePath", "https://cdnjs.cloudflare.com/ajax/libs/ace/1.9.6/");
       var theme = localStorage.getItem("editorTheme")
+      var keyBoard = localStorage.getItem('editorKeyBinding')
       options.theme = "ace/theme/" + theme
+      options.keyboardHandler = "ace/keyboard/" + keyBoard
       editor = ace.edit(editorform.value, options);
+      console.log("keybing:",editor.getKeyboardHandler())
       console.log(props.theme)
+      editor.getKeyboardHandler()
       //代码提示和自动补全
       editor.setOptions({
         enableSnippets: true,
         enableLiveAutocompletion: true,
         enableBasicAutocompletion: true,
       });
+      // editor.setKeyboardHandler('ace/keyboard/vim')
       editor.getSession().setUseWrapMode(true);
       // 支持双向绑定
       editor.on("change", () => {
@@ -120,11 +142,23 @@ export default {
     watch(() => props.language, (newValue,oldValue) => {
       options.mode = "ace/mode/" + newValue
       editor.getSession().setMode(options.mode)
+
     })
     watch(() => props.theme, (newValue,oldValue) => {
       options.theme = "ace/theme/" + newValue
       editor.setTheme(options.theme)
       initialize()
+    })
+    watch(() => props.keyBinding, (newValue,oldValue) => {
+
+      options.keyboardHandler =  "ace/keyboard/" + newValue
+      editor.setKeyboardHandler(options.keyboardHandler)
+      console.log("keybing:",editor.getKeyboardHandler())
+    })
+    watch(() => props.tabSize, (newValue,oldValue) => {
+      options.tabSize =  newValue
+      initialize()
+      console.log("tabsize:",editor.getSession().getTabSize())
     })
     watch(
         () => props.value,

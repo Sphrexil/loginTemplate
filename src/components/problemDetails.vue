@@ -76,7 +76,7 @@
 <!--                    </div>-->
 <!--                  </div>-->
 <!--                </div>-->
-              <div class="article-content markdown-body" v-html="problem.problem" style="text-align: left;"></div>
+              <div class="article-content markdown-body" v-html="problem.problem" style="text-align: left;font-weight: bolder"></div>
 
 
 
@@ -195,7 +195,7 @@
             </div>
             <q-separator size="1px" />
             <q-separator size="0.7px" color="#e5dbdb"/>
-            <div style="min-height: 300px;width: auto" >
+            <div style="min-height: 400px;width: auto" >
               <div>
                 <ace-editor
                     ref="addcodeform"
@@ -204,6 +204,8 @@
                     v-model:language="cmadd.language"
                     v-model:theme="cmadd.theme"
                     v-model:readonly="cmadd.readonly"
+                    v-model:keyBinding="cmadd.keyBinding"
+                    v-model:tabSize="cmadd.tabSize"
                     @update:value="cmadd.value = $event"
                     @update:language="cmadd.language = $event"
                 />
@@ -224,6 +226,48 @@
                     </div>
                   </q-btn>
                 </q-card-actions>
+                <q-card-section>
+                  <div>
+                    <q-card style="height: auto;" square  bordered>
+                      <div style="background-color: #f3f0f0;height: 50px;">
+                        <div class="text-h5" style="padding-top: 10px;margin-left: -520px">
+                          代码运行状态:
+                          <label style="color: red">
+                            Compile Error
+                          </label>
+                        </div>
+                        <q-btn icon="close" flat round dense style="position: absolute;right: 10px;top: 5px"/>
+                      </div>
+                      <div style="min-height: 250px">
+                        <div style="margin-top: 30px;position: absolute;left: 30px;font-size: large">
+                            输入:
+
+                        </div>
+                        <el-input v-model="hh" style="width: 800px;margin-top: 52px;margin-left: -5px"
+                                  type="textarea"
+                                  resize="none"
+                                  :autosize="{ minRows: 5, maxRows: 100 }"
+                                  input-style="background-color: #f3f0f0;"
+                        >
+                        </el-input>
+                        <div style="padding-top: 7px;position: absolute;left: 30px;font-size: large">
+                          输出:
+                        </div>
+                        <div style="padding-top: 30px;position: absolute;left: 30px;">
+                          <el-input model-value="" style="width: 800px;"
+                                    type="textarea"
+                                    resize="none"
+                                    :autosize="{ minRows: 1, maxRows: 100 }"
+                                    input-style="background-color: #f3f0f0;"
+                                    readonly
+                          >
+                          </el-input>
+                        </div>
+                      </div>
+                    </q-card>
+                  </div>
+
+                </q-card-section>
 <!--                <div class="ace-toolbar">-->
 <!--                  <button v-on:click="codeComplete">代码完成</button>-->
 <!--                  <button v-on:click="cancelCodeComplete">取消代码完成</button>-->
@@ -262,6 +306,9 @@
           </q-card>
         </div>
       </div>
+
+
+
     </q-card>
   </div>
 </template>
@@ -329,11 +376,12 @@ export default {
         {
           title: '编辑类型',
           explain: '更喜欢Vim或者Emacs的输入方式吗？我们也为你提供了这些选项。',
-          value: 'Standard',
+          value: 'vscode',
           options: [
-             'Standard',
-             'Vim',
-             'Emacs',
+             'vim',
+             'emacs',
+             'sublime',
+             'vscode'
           ]
         },
         {
@@ -344,7 +392,7 @@ export default {
              '2个空格',
              '4个空格',
              '8个空格',
-          ]
+          ],
         },
         {
           title: '代码补全',
@@ -363,7 +411,9 @@ export default {
       id: 0,
       readonly: false,
       language: 'java',
-      theme: 'eclipse'
+      theme: 'eclipse',
+      keyBinding: 'vscode',
+      tabSize: 2
     });
 
     watch(() => editor.settingOptions[0].value, (newValue, oldValue) => {
@@ -402,10 +452,23 @@ export default {
       console.log(cmadd.language)
       localStorage.setItem("chooseLanguage",newValue)
     })
-
+    function tabSizeHandle(msg) {
+      if (msg === '2个空格') {
+        return 2
+      }else if (msg === '4个空格') {
+        return 4
+      }else {
+        return 8
+      }
+    }
     function updateEditorSetting() {
       cmadd.theme = editor.settingOptions[0].value
       localStorage.setItem("editorTheme", cmadd.theme)
+      cmadd.keyBinding = editor.settingOptions[1].value
+      localStorage.setItem("editorKeyBinding", editor.settingOptions[1].value)
+      cmadd.tabSize = tabSizeHandle(editor.settingOptions[2].value)
+      console.log("daxiao:",cmadd.tabSize)
+      localStorage.setItem("tabSize", editor.settingOptions[2].value)
     }
 
     function colorChangeIn() {
@@ -502,8 +565,11 @@ export default {
       }
       var theme = localStorage.getItem("editorTheme")
       editor.settingOptions[0].value = theme?theme:editor.settingOptions[0].value
-
-console.log("5665656",name)
+      var keyBoard = localStorage.getItem('editorKeyBinding')
+      editor.settingOptions[1].value = keyBoard?keyBoard:editor.settingOptions[1].value
+      var tabSize = localStorage.getItem('tabSize')
+      editor.settingOptions[2].value = tabSize?tabSize:editor.settingOptions[2].value
+      console.log("5665656",name)
     })
 
     function editorSetting() {
@@ -576,8 +642,10 @@ console.log("5665656",name)
       // testEditor.setTheme(theme);
     }
 
-
-
+const hh = ref('')
+watch(() => hh, ()=>{
+  console.log("56565656")
+})
     return{
       problem,
       editor,
@@ -606,7 +674,7 @@ console.log("5665656",name)
       tab: ref(""),
       type,
       cleanIcon,
-
+      hh
     }
   },
 created() {
@@ -665,7 +733,7 @@ created() {
   width: auto;
   height: auto;
   padding: 0;
-  margin-top: -600px;
+  margin-top: -650px;
   margin-left: auto;
   margin-right: auto;
   overflow: visible;
