@@ -1,4 +1,4 @@
-import request from '@/utils/request'
+import request from '@/utils/requestSub.js'
 
 // 查询问题列表
 export function addSubmission(data) {

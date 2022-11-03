@@ -58,7 +58,7 @@
         <div class="user-box">
           <input type="text" name="" required="" v-model="user.verificationCode" ref="loginValidate">
           <label :style="mod.verificationCodeColor">{{ mod.verificationCodeLabel }}</label>
-          <q-btn @click="sendMailTo('loginValidate')" :style="mod.loginValidateInterval">{{
+          <q-btn @click="sendMailTo('loginValidate', mod.userEmail)" :style="mod.loginValidateInterval">{{
               mod.sendMailLoginValidateMsg
             }}
           </q-btn>
@@ -161,6 +161,7 @@ export default {
       // 组件默认消息
       forgetPwdMsg: '',
       userId: '',
+      userEmail: '',
       localExist: false
     })
     watch(() => user.verificationCode, (newValue, oldValue) => {
@@ -205,12 +206,13 @@ export default {
           sendMailTo('loginValidate', res.mail)
           console.log("id:{}", res.id)
           mod.userId = res.id
+          mod.userEmail = res.mail
         })
 
         if (validate.value !== null) {
           clearTimeout(validate)
         }
-        sendMailTo('loginValidate')
+        // sendMailTo('loginValidate')
       }
       if (msg === 'register') {
         if (!testEmail()) return;
@@ -253,7 +255,7 @@ export default {
           ElMessage.success('登陆成功')
           console.log(res.userInfo)
           localStorage.setItem("userInfo", JSON.stringify(res.userInfo))
-          router.push({path: '/'});
+          router.push({path: localStorage.getItem('logUrl')?localStorage.getItem('logUrl'):'/'});
           console.log("登录结果:{}", res)
         })
       }

@@ -12,7 +12,9 @@ export const state = {
     themeObj: 0,//主题
     keywords:'',//关键词
     baseURL:'http://localhost:11000',
-    problemBaseURL: 'http://localhost:9000'
+    problemBaseURL: 'http://localhost:9000',
+    subBaseURL: 'http://localhost:10000',
+    artBaseURL: 'http://localhost:12000'
 }
 
 export default new Vuex.Store({

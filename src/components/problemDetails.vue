@@ -10,7 +10,7 @@
 
       <div class="q-pa-md">
         <div class="q-gutter-y-md" style="width: 900px;height: auto">
-          <q-card >
+          <q-card style="height: auto">
             <q-tabs
                 v-model="tab"
                 class="bg-white text-grey"
@@ -18,9 +18,8 @@
                 narrow-indicator
                 inline-label
             >
-              <q-route-tab name="problemDetail" exact  label="题目" icon="today" to="/content/8" />
-              <q-route-tab name="submission" exact  label="提交记录" icon="list" to="/content/7"/>
-
+              <q-route-tab name="problemDetail" exact  label="题目" icon="today" :to="'/content/' + problemId"/>
+              <q-route-tab name="submission" exact  label="提交记录" icon="list" :to="'/submission/' + problemId"/>
             </q-tabs>
 
             <q-separator />
@@ -208,14 +207,15 @@
                     v-model:tabSize="cmadd.tabSize"
                     @update:value="cmadd.value = $event"
                     @update:language="cmadd.language = $event"
+
                 />
                 <q-card-actions align="right" style="margin-top: -500px">
-                  <q-btn  rounded style="width: 130px;margin-right: 20px;"  outline>
+                  <q-btn  rounded style="width: 130px;margin-right: 20px;"  outline @click="degCode" :disable="buttonState.debCon">
                     <span class="material-icons" style="padding-right: 15px;font-size: large;">
                     play_circle
                     </span>
                     调试代码</q-btn>
-                  <q-btn rounded style="width: 130px;margin-right: 20px;background-color: #13af13" outline>
+                  <q-btn rounded style="width: 130px;margin-right: 20px;background-color: #13af13" outline @click="subCode" :disable="buttonState.subCon">
                     <div style="background-color: #5CB85C;position: absolute;height: 100%;width: 100%;border-radius: 18px;">
                       <div style="margin-top: 5px;color: white">
                         <span class="material-icons" style="padding-right: 15px;font-size: large;" >
@@ -226,83 +226,97 @@
                     </div>
                   </q-btn>
                 </q-card-actions>
-                <q-card-section>
+                <q-card-section v-if="SubOrDebug.isVisible" style="height: auto">
                   <div>
                     <q-card style="height: auto;" square  bordered>
                       <div style="background-color: #f3f0f0;height: 50px;">
-                        <div class="text-h5" style="padding-top: 10px;margin-left: -520px">
+                        <div class="text-h5" style="position: absolute;left: 32px;top: 7px">
                           代码运行状态:
-                          <label style="color: red">
+                          <div v-if="!SubOrDebug.isSubOrDegHeader" style="display: inline-block;color: #13959b">
+                            Running<q-btn
+                                :loading="SubOrDebug.isLoading"
+                                :percentage="SubOrDebug.percentage"
+                                round
+                                disable
+                                text-color="#13959b"
+                                unelevated
+                                color="#f3f0f0"
+                                align="center"
+                                dense
+                            />
+                          </div>
+                          <label style="color: red" v-if="SubOrDebug.isSubOrDegHeader">
                             Compile Error
                           </label>
                         </div>
-                        <q-btn icon="close" flat round dense style="position: absolute;right: 10px;top: 5px"/>
+                        <q-btn icon="close" flat round dense style="position: absolute;right: 10px;top: 5px" @click="cloSubOrDeg"/>
                       </div>
-                      <div style="min-height: 250px">
+                      <div  style="min-height: 250px">
                         <div style="margin-top: 30px;position: absolute;left: 30px;font-size: large">
                             输入:
-
                         </div>
-                        <el-input v-model="hh" style="width: 800px;margin-top: 52px;margin-left: -5px"
+                        <el-input v-model="SubOrDebug.debugContent" style="width: 800px;margin-top: 52px;margin-left: -5px"
                                   type="textarea"
                                   resize="none"
-                                  :autosize="{ minRows: 5, maxRows: 100 }"
+                                  :autosize="{ minRows: 5, maxRows: 1000 }"
                                   input-style="background-color: #f3f0f0;"
                         >
                         </el-input>
                         <div style="padding-top: 7px;position: absolute;left: 30px;font-size: large">
                           输出:
                         </div>
-                        <div style="padding-top: 30px;position: absolute;left: 30px;">
-                          <el-input model-value="" style="width: 800px;"
-                                    type="textarea"
-                                    resize="none"
-                                    :autosize="{ minRows: 1, maxRows: 100 }"
-                                    input-style="background-color: #f3f0f0;"
-                                    readonly
-                          >
-                          </el-input>
-                        </div>
-                      </div>
+                        <el-input v-model="SubOrDebug.debugOutContent" style="width: 800px;margin-top: 30px;margin-left: -5px;margin-bottom: 20px"
+                                  type="textarea"
+                                  resize="none"
+                                  :autosize="{ minRows: 1, maxRows: 100 }"
+                                  input-style="background-color: #f3f0f0;"
+                                  readonly
+                        ></el-input>
+<!--                        <div style="padding-top: 30px;position: absolute;left: 30px;padding-bottom: 10px">-->
+<!--                          <el-input v-model="SubOrDebug.debugOutContent" style="width: 800px;"-->
+<!--                                    type="textarea"-->
+<!--                                    resize="none"-->
+<!--                                    :autosize="{ minRows: 1, maxRows: 100 }"-->
+<!--                                    input-style="background-color: #f3f0f0;"-->
+<!--                                    readonly-->
+<!--                          >-->
+
+<!--                        </div>-->
+                      </div      >
                     </q-card>
                   </div>
 
                 </q-card-section>
-<!--                <div class="ace-toolbar">-->
-<!--                  <button v-on:click="codeComplete">代码完成</button>-->
-<!--                  <button v-on:click="cancelCodeComplete">取消代码完成</button>-->
-<!--                </div>-->
-<!--                <div class="ace-toolbar">-->
-<!--                  <button v-on:click="fillValue">填充值</button>-->
-<!--                  <button v-on:click="clearValue">清空值</button>-->
-<!--                </div>-->
-<!--                <div class="ace-toolbar">-->
-<!--                  <button v-on:click="getSelectText">获取选中文本</button>-->
-<!--                  <button v-on:click="insert">光标处插入hello</button>-->
-<!--                  <button v-on:click="getLineNum">获取总行数</button>-->
-<!--                  <button v-on:click="getLineAndRow">获取光标所在行与列</button>-->
-<!--                  <button v-on:click="gotoLine">光标跳转到1行1列</button>-->
-<!--                </div>-->
-<!--                <div class="ace-toolbar">-->
-<!--                  <button v-on:click="setReadOnly(true)">编辑器只读</button>-->
-<!--                  <button v-on:click="setReadOnly(false)">编辑器可编辑</button>-->
-<!--                </div>-->
-<!--                <div class="ace-toolbar">-->
-<!--                  <button v-on:click="openSearchBox">打开编辑器搜素框</button>-->
-<!--                  <button v-on:click="openReplaceBox">打开编辑器替换框</button>-->
-<!--                </div>-->
-<!--                <div class="ace-toolbar">-->
-<!--                  <button v-on:click="updateEditorLanguage('ace/mode/json5')">更改编辑器语言：json</button>-->
-<!--                  <button v-on:click="updateEditorLanguage('ace/mode/xml')">更改编辑器语言：xml</button>-->
-<!--                  <button v-on:click="updateEditorLanguage('ace/mode/javascript')">更改编辑器语言：javascript</button>-->
-<!--                </div>-->
-<!--                <div class="ace-toolbar">-->
-<!--                  <button v-on:click="updateEditorTheme('ace/theme/kuroir')">更改编辑器主题：kuroir</button>-->
-<!--                  <button v-on:click="updateEditorTheme('ace/theme/one_dark')">更改编辑器主题：one_dark</button>-->
-<!--                  <button v-on:click="updateEditorTheme('ace/theme/github')">更改编辑器主题：github</button>-->
-<!--                </div>-->
               </div>
             </div>
+
+            <q-card-section v-if="SubOrDebug.subVisible" style="height: auto">
+              <q-separator/>
+              <div style="height: 50px;">
+                <div class="text-h5" style="position: absolute;left: 32px;top: 30px">
+                  代码提交状态:
+                  <div v-if="!SubOrDebug.isSubOrDegHeader" style="display: inline-block;color: #13959b">
+                    Judging<q-btn
+                      :loading="SubOrDebug.isLoading"
+                      :percentage="SubOrDebug.percentage"
+                      round
+                      disable
+                      text-color="#13959b"
+                      unelevated
+                      color="#f3f0f0"
+                      align="center"
+                      dense
+                  />
+                  </div>
+                  <label :style="SubOrDebug.subStatus ?'color: green':'color: red'" v-if="SubOrDebug.isSubOrDegHeader">
+                    {{  SubOrDebug.subStatus ? "Accepted":"Compile Error" }}
+                  </label>
+                </div>
+              </div>
+            </q-card-section>
+
+
+
           </q-card>
         </div>
       </div>
@@ -327,12 +341,16 @@ import { VMarkdownView } from 'vue3-markdown'
 import { mavonEditor } from 'mavon-editor'
 import {toHTML} from '@/utils/markdown.ts'
 import 'vue3-markdown/dist/style.css'
-
+import {addSubmission} from '@/api/submission'
 export default {
 
   components: {brain, bcg, aceEditor},
   setup() {
+    const problemId = useRoute().params.id
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'))
     const problem = reactive({
+      outVal : '',
+      inVal: '',
       problemName : '',
       problem: '',
       outputDescribe: '',
@@ -416,6 +434,92 @@ export default {
       tabSize: 2
     });
 
+    const SubOrDebug = reactive({
+      debugContent : '',
+      debugOutContent: '',
+      isVisible: false,
+      isLoading: false,
+      percentage: 0,
+      isSubOrDegHeader: false,
+      isDebug: false,
+      subVisible: false,
+      subStatus: false,
+      subComplieError: ''
+    })
+    let buttonState = reactive({
+      subCon: false,
+      debCon: false
+    })
+    function buttonAble() {
+      buttonState.subCon = false
+      buttonState.debCon = false
+    }
+    function buttonDisable() {
+      buttonState.subCon = true
+      buttonState.debCon = true
+    }
+
+    let subWait = null
+    function subCode() {
+      try {
+        if (subWait !== null) {
+          clearTimeout(subWait)
+        }
+        SubOrDebug.subVisible = true
+        SubOrDebug.isSubOrDegHeader = false
+        SubOrDebug.isLoading = true
+        SubOrDebug.isDebug = false
+        SubOrDebug.isVisible = false
+        buttonDisable()
+
+        var start= Date.now();
+        console.log("start时间:",start)
+        addSubmission({
+          language: editor.content,
+          relatedUser: userInfo.id,
+          relatedProblem: problemId,
+          code: cmadd.value,
+          isDebug: false
+        }).then((res) => {
+          if ("Accepted" === res.status) {
+            SubOrDebug.subStatus = true
+          }
+          SubOrDebug.subComplieError = res.compileError
+        })
+        var end= Date.now();
+        console.log("end时间:",end)
+        console.log("judge时间:",end - start)
+        subWait = setTimeout(() => {
+          SubOrDebug.isLoading = false
+          console.log("到这来了")
+          SubOrDebug.isSubOrDegHeader = true
+        }, (start - end) < 1000 ? 1000 : start - end)
+        // SubOrDebug.isLoading = true
+      }finally {
+        buttonAble()
+      }
+    }
+    let debugWait = null
+    function degCode() {
+      if (debugWait !== null) {
+        clearTimeout(debugWait)
+      }
+      SubOrDebug.subVisible = false
+      SubOrDebug.isSubOrDegHeader = false
+      SubOrDebug.isVisible = true
+      SubOrDebug.isLoading = true
+      debugWait = setTimeout(() => {
+        SubOrDebug.isLoading = false
+        SubOrDebug.isSubOrDegHeader = true
+      }, 5000)
+      SubOrDebug.isVisible = true
+      // SubOrDebug.isLoading = true
+      SubOrDebug.isDebug = true
+    }
+
+    function cloSubOrDeg() {
+      SubOrDebug.isVisible = false
+    }
     watch(() => editor.settingOptions[0].value, (newValue, oldValue) => {
       if (newValue === null) {
         newValue = oldValue
@@ -529,12 +633,8 @@ export default {
 
         // problem.problem = markdownIt.render(res.problem)
         problem.problem = toHTML(res.problem)
-        problem.problemRow = markdownIt.render(res.problem).split('。')
-        problem.problemOutRow = markdownIt.render(res.outputDescribe).split('。')
-        problem.problemIntRow = markdownIt.render(res.inputDescribe).split('。')
-        problem.problemDataRow = markdownIt.render(res.dataRange).split(',')
-        problem.problemCaIntRow = markdownIt.render(JSON.parse(res.sample).in).split(',')
-        problem.problemCaOutRow = markdownIt.render(JSON.parse(res.sample).out).split(',')
+        SubOrDebug.debugContent = JSON.parse(res.sample).in
+        SubOrDebug.debugOutContent = JSON.parse(res.sample).out
       })
     }
     let testEditor = reactive(null)
@@ -553,9 +653,10 @@ export default {
       //   readOnly: false, //只读
       //   highlightActiveLine: true
       // });
+      console.log("该问题的id为:"+problemId)
 
       var name = localStorage.getItem('chooseLanguage')
-      editor.content = name
+      editor.content = name?name:editor.content
       if (name) {
         name = languageName(name)
         // updateEditorLanguage('ace/mode/'+name)
@@ -563,6 +664,8 @@ export default {
         name = languageName(editor.content)
         // updateEditorLanguage('ace/mode/'+name)
       }
+      localStorage.setItem("LanguageNam", name)
+      cmadd.language = name
       var theme = localStorage.getItem("editorTheme")
       editor.settingOptions[0].value = theme?theme:editor.settingOptions[0].value
       var keyBoard = localStorage.getItem('editorKeyBinding')
@@ -642,19 +745,24 @@ export default {
       // testEditor.setTheme(theme);
     }
 
-const hh = ref('')
-watch(() => hh, ()=>{
-  console.log("56565656")
-})
+function test() {
+      console.log("problemId:",problemId)
+}
+
     return{
       problem,
       editor,
       cmadd,
+      buttonState,
+      test,
       getProblemDetails,
       colorChangeIn,
       colorChangeOut,
       editorSetting,
       updateEditorSetting,
+      subCode,
+      degCode,
+      cloSubOrDeg,
       cleanCode,
       updateEditorLanguage,
       updateEditorTheme,
@@ -674,11 +782,11 @@ watch(() => hh, ()=>{
       tab: ref(""),
       type,
       cleanIcon,
-      hh
+      SubOrDebug,
+      problemId
     }
   },
 created() {
-  console.log("该问题的id为:"+useRoute().params.id)
   this.getProblemDetails(useRoute().params.id)
 }
 }

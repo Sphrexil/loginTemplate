@@ -8,6 +8,22 @@ export function sendMail(to) {
     params: {to: to}
   })
 }
+//-----------------
+export function updateUser(to) {
+  return request({
+    url: '/sendMail',
+    method: 'post',
+    params: {to: to}
+  })
+}
+export function userInfo(to) {
+  return request({
+    url: '/sendMail',
+    method: 'post',
+    params: {to: to}
+  })
+}
+//------------------
 
 // 查询用户列表
 export function userLogin(userName, password, code, localExist) {

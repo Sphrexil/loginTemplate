@@ -54,7 +54,7 @@
             <q-tooltip>Notifications</q-tooltip>
           </q-btn>
           <!-- 头像-->
-          <q-btn round flat @click="toLoginOrUserInfo">
+          <q-btn round flat @click="user.hasLogin?toLoginOrUserInfo: ''">
 
             <div v-if="user.hasLogin" class="haslogin">
               <q-avatar size="26px">
@@ -63,8 +63,8 @@
                 </q-avatar>
                 <q-menu :style="{ backgroundColor: '#eee', color: 'blue'}" context-menu:false>
                   <q-list style="min-width: 100px">
-                    <q-item clickable>
-                      <q-item-section>个人中心</q-item-section>
+                    <q-item clickable @click="toLoginOrUserInfo">
+                      <q-item-section >个人中心</q-item-section>
                     </q-item>
                     <q-separator />
                     <q-item clickable @click="userlogout">
@@ -88,90 +88,6 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer
-        v-model="leftDrawerOpen"
-        show-if-above
-        bordered
-        class="bg-grey-2"
-        :width="240"
-    >
-      <q-scroll-area class="fit">
-        <q-list padding>
-          <q-item v-for="link in links1" :key="link.text" v-ripple clickable>
-            <q-item-section avatar>
-              <q-icon color="grey" :name="link.icon" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>{{ link.text }}</q-item-label>
-            </q-item-section>
-          </q-item>
-
-          <q-separator class="q-my-md" />
-
-          <q-item v-for="link in links2" :key="link.text" v-ripple clickable>
-            <q-item-section avatar>
-              <q-icon color="grey" :name="link.icon" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>{{ link.text }}</q-item-label>
-            </q-item-section>
-          </q-item>
-
-          <q-separator class="q-mt-md q-mb-xs" />
-
-          <q-item-label header class="text-weight-bold text-uppercase">
-            More from Youtube
-          </q-item-label>
-
-          <q-item v-for="link in links3" :key="link.text" v-ripple clickable>
-            <q-item-section avatar>
-              <q-icon color="grey" :name="link.icon" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>{{ link.text }}</q-item-label>
-            </q-item-section>
-          </q-item>
-
-          <q-separator class="q-my-md" />
-
-          <q-item v-for="link in links4" :key="link.text" v-ripple clickable>
-            <q-item-section avatar>
-              <q-icon color="grey" :name="link.icon" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>{{ link.text }}</q-item-label>
-            </q-item-section>
-          </q-item>
-
-          <q-separator class="q-mt-md q-mb-lg" />
-
-          <div class="q-px-md text-grey-9">
-            <div class="row items-center q-gutter-x-sm q-gutter-y-xs">
-              <a
-                  v-for="button in buttons1"
-                  :key="button.text"
-                  class="YL__drawer-footer-link"
-                  href="javascript:void(0)"
-              >
-                {{ button.text }}
-              </a>
-            </div>
-          </div>
-          <div class="q-py-md q-px-md text-grey-9">
-            <div class="row items-center q-gutter-x-sm q-gutter-y-xs">
-              <a
-                  v-for="button in buttons2"
-                  :key="button.text"
-                  class="YL__drawer-footer-link"
-                  href="javascript:void(0)"
-              >
-                {{ button.text }}
-              </a>
-            </div>
-          </div>
-        </q-list>
-      </q-scroll-area>
-    </q-drawer>
 
     <q-page-container>
       <router-view />
@@ -228,6 +144,9 @@ export default {
     function toLoginOrUserInfo () {
       if (!user.hasLogin) {
         router.push({path:"/login"})
+      }else {
+        var userInfo = JSON.parse(localStorage.getItem('userInfo'))
+        router.push({path:"/userInfo/" + userInfo.id})
       }
     }
     function toggleLeftDrawer () {
