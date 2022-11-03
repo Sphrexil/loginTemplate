@@ -11,7 +11,7 @@ var isHandleData = true;
 // 创建axios实例
 const service = axios.create({
   // axios中请求配置有baseURL选项，表示请求URL公共部分
-  baseURL: store.state.problemBaseURL,
+  baseURL: store.state.artBaseURL,
   // 超时
   timeout: 100000,
 })
@@ -84,10 +84,6 @@ service.interceptors.response.use(res => {
       type: 'error'
     })
     return Promise.reject(new Error(msg))
-  } else if (code === 404) {
-    router.push({
-      path: '/404'
-    });
   } else if (code !== 200) {
     // Notify.registerType('failed', {
     //   icon: 'negative',

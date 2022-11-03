@@ -81,7 +81,7 @@ export default {
     const editorform = ref(null);
     let options = reactive({
       theme: "ace/theme/" + (props.theme ? props.theme : "github"),
-      mode: "ace/mode/" + (props.language ? props.language : "yaml"),
+      mode: "ace/mode/" + (props.language ? props.language : "c_cpp"),
       tabSize: 2,
       maxLines: 200,
       minLines: 25,
@@ -100,15 +100,24 @@ export default {
         editor.destroy();
       }
       //初始化
+
       ace.config.set("basePath", "https://cdnjs.cloudflare.com/ajax/libs/ace/1.9.6/");
       var theme = localStorage.getItem("editorTheme")
       var keyBoard = localStorage.getItem('editorKeyBinding')
-      options.theme = "ace/theme/" + theme
-      options.keyboardHandler = "ace/keyboard/" + keyBoard
+      var language = localStorage.getItem('LanguageNam')
+      if (theme) {
+        options.theme = "ace/theme/" + theme
+      }
+      if (keyBoard) {
+        options.keyboardHandler = "ace/keyboard/" + keyBoard
+      }
+      if (language) {
+        options.mode = "ace/mode/" + language
+      }
       editor = ace.edit(editorform.value, options);
+      console.log("propsLan:",options.mode)
       console.log("keybing:",editor.getKeyboardHandler())
-      console.log(props.theme)
-      editor.getKeyboardHandler()
+      console.log("language:", props.language)
       //代码提示和自动补全
       editor.setOptions({
         enableSnippets: true,
@@ -142,7 +151,7 @@ export default {
     watch(() => props.language, (newValue,oldValue) => {
       options.mode = "ace/mode/" + newValue
       editor.getSession().setMode(options.mode)
-
+      console.log("propsLan2222:",options.mode)
     })
     watch(() => props.theme, (newValue,oldValue) => {
       options.theme = "ace/theme/" + newValue

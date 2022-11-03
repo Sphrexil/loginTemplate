@@ -3,7 +3,6 @@
 
   <brain/>
   <div class="body_part">
-
     <bcg/>
     <q-card  class="my_card">
       <q-card-section>
@@ -44,13 +43,13 @@
             <q-card-actions class="child_items">
               <label class="title_id" >{{index}}</label>
               <el-link class="title_name" style="padding-right: 20px" type="primary"
-              :href="'http://127.0.0.1:5173/#/content/' + item.id">
+                       :href="'http://127.0.0.1:5173/#/content/' + item.id">
                 {{ item.problemName }}</el-link>
               <label class="title_pass" style="margin-right: 15px;opacity: 0.5">100%</label>
               <el-tag :type="item.difficulty === 1?'success': item.difficulty === 2?'warning':'danger'" class="title_difficulty"
-              style="margin-right: -8px">
+                      style="margin-right: -8px">
                 {{ item.difficulty === 1?'简单': item.difficulty === 2?'中等':'困难'}}</el-tag>
-<!--              <label class="title_difficulty">{{ item.difficulty === 1?'简单': item.difficulty === 2?'中等':'困难'}}</label>-->
+              <!--              <label class="title_difficulty">{{ item.difficulty === 1?'简单': item.difficulty === 2?'中等':'困难'}}</label>-->
             </q-card-actions>
           </div>
           <q-separator size="1px"/>
@@ -73,13 +72,13 @@
     </q-card>
   </div>
 
-
-
 </template>
 
 <script>
 import header from '@/components/header.vue'
 import background from '@/components/backgroud.vue'
+import background2 from '@/components/backgroud2.vue'
+
 import middle from '@/components/middle.vue'
 import {reactive} from "vue";
 import {listProblem} from "@/api/problem.ts";
@@ -168,9 +167,11 @@ export default {
   created() {
     var count = localStorage.getItem("ProblemCurrentPage")
     console.log("存入的页码为:"+count)
-    this.problem.query.pageNum = count
-
+    if (count) {
+      this.problem.query.pageNum = count
+    }
     this.getProblemList(this.problem.query)
+    console.log('query:', this.problem.query.pageNum)
     this.problem.current = this.problem.totalPage < count ? 1 : count
 
   }
