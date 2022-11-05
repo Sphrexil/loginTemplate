@@ -110,11 +110,28 @@ export default {
     function setUrl() {
       localStorage.setItem('logUrl', useRoute().path);
     }
-
+    function languageName(msg){
+      if (msg) {
+        if (msg === 'C++') {
+          return 'c_cpp'
+        } else if (msg === 'Go') {
+          return 'golang'
+        } else if (msg === 'Java') {
+          return 'java'
+        } else if (msg === 'Python') {
+          return 'python'
+        } else if (msg === 'C'){
+          return 'c_cpp'
+        } else {
+          return 'javascript'
+        }
+      }
+    }
     onMounted(() => {
       getProblemDetails(problemId)
       getSubmission(submissionId).then((res) => {
         cmadd.value = res.code
+        cmadd.language = languageName(res.language)
       })
       console.log("submissionId:",submissionId)
     })

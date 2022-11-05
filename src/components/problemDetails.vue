@@ -195,20 +195,20 @@
             <q-separator size="1px" />
             <q-separator size="0.7px" color="#e5dbdb"/>
             <div style="min-height: 400px;width: auto" >
-              <div>
-                <ace-editor
-                    ref="addcodeform"
-                    v-model:value="cmadd.value"
-                    v-model:id="cmadd.id"
-                    v-model:language="cmadd.language"
-                    v-model:theme="cmadd.theme"
-                    v-model:readonly="cmadd.readonly"
-                    v-model:keyBinding="cmadd.keyBinding"
-                    v-model:tabSize="cmadd.tabSize"
-                    @update:value="cmadd.value = $event"
-                    @update:language="cmadd.language = $event"
-
-                />
+                <q-card square>
+                  <ace-editor
+                      ref="addcodeform"
+                      v-model:value="cmadd.value"
+                      v-model:id="cmadd.id"
+                      v-model:language="cmadd.language"
+                      v-model:theme="cmadd.theme"
+                      v-model:readonly="cmadd.readonly"
+                      v-model:keyBinding="cmadd.keyBinding"
+                      v-model:tabSize="cmadd.tabSize"
+                      @update:value="cmadd.value = $event"
+                      @update:language="cmadd.language = $event"
+                  />
+                </q-card>
                 <q-card-actions align="right" style="margin-top: -500px">
                   <q-btn  rounded style="width: 130px;margin-right: 20px;"  outline @click="degCode" :disable="buttonState.debCon">
                     <span class="material-icons" style="padding-right: 15px;font-size: large;">
@@ -251,6 +251,7 @@
                         </div>
                         <q-btn icon="close" flat round dense style="position: absolute;right: 10px;top: 5px" @click="cloSubOrDeg"/>
                       </div>
+                      <q-separator/>
                       <div  style="min-height: 250px">
                         <div style="margin-top: 30px;position: absolute;left: 30px;font-size: large">
                             输入:
@@ -285,9 +286,7 @@
                       </div      >
                     </q-card>
                   </div>
-
                 </q-card-section>
-              </div>
             </div>
 
             <q-card-section v-if="SubOrDebug.subVisible" style="height: auto">
@@ -308,14 +307,76 @@
                       dense
                   />
                   </div>
-                  <label :style="SubOrDebug.subStatus ?'color: green':'color: red'" v-if="SubOrDebug.isSubOrDegHeader">
-                    {{  SubOrDebug.subStatus ? "Accepted":"Compile Error" }}
+                  <label :style="SubOrDebug.subStatus === 'Accepted' ?'color: green':'color: red'" v-if="SubOrDebug.isSubOrDegHeader">
+                    {{  SubOrDebug.subStatus }}
                   </label>
+
                 </div>
               </div>
+              <q-card v-if="SubOrDebug.subIsVisible" style="height: auto;" square  bordered>
+                <div class="text-h5" style="position: absolute;left: 32px;top: 7px">
+                  代码运行状态:
+                  <label v-if="SubOrDebug.isSubOrDegHeader">
+                    错误数据如下所示
+                  </label>
+                </div>
+
+                <div style="background-color: #f3f0f0;height: 50px;">
+                  <q-btn icon="close" flat round dense style="position: absolute;right: 10px;top: 5px" @click="cloSubOrDeg('sub')"/>
+                </div>
+                <q-separator/>
+                <div  style="min-height: 250px">
+                  <div style="margin-top: 30px;position: absolute;left: 30px;font-size: large">
+                    输入:
+                  </div>
+                  <el-input v-model="subWrongSample.in" style="width: 800px;margin-top: 52px;margin-left: -5px"
+                            type="textarea"
+                            resize="none"
+                            :autosize="{ minRows: 5, maxRows: 1000 }"
+                            input-style="background-color: #f3f0f0;"
+                  >
+                  </el-input>
+                  <div style="padding-top: 7px;position: absolute;left: 30px;font-size: large">
+                    输出:
+                  </div>
+                  <el-input v-model="subWrongSample.out" style="width: 800px;margin-top: 30px;margin-left: -5px;margin-bottom: 20px"
+                            type="textarea"
+                            resize="none"
+                            :autosize="{ minRows: 1, maxRows: 100 }"
+                            input-style="background-color: #f3f0f0;"
+                            readonly
+                  ></el-input>
+                  <div style="padding-top: 7px;position: absolute;left: 30px;font-size: large">
+                    标准答案:
+                  </div>
+                  <el-input v-model="subWrongSample.standardOut" style="width: 800px;margin-top: 30px;margin-left: -5px;margin-bottom: 20px"
+                            type="textarea"
+                            resize="none"
+                            :autosize="{ minRows: 1, maxRows: 100 }"
+                            input-style="background-color: #f3f0f0;"
+                            readonly
+                  ></el-input>
+                  <p style="margin-left: -693px;">{{'运行时间：' + subWrongSample.timeUsage + 'ms'}}</p>
+                  <!--                        <div style="padding-top: 30px;position: absolute;left: 30px;padding-bottom: 10px">-->
+                  <!--                          <el-input v-model="SubOrDebug.debugOutContent" style="width: 800px;"-->
+                  <!--                                    type="textarea"-->
+                  <!--                                    resize="none"-->
+                  <!--                                    :autosize="{ minRows: 1, maxRows: 100 }"-->
+                  <!--                                    input-style="background-color: #f3f0f0;"-->
+                  <!--                                    readonly-->
+                  <!--                          >-->
+
+                  <!--                        </div>-->
+                </div      >
+              </q-card>
+
             </q-card-section>
 
-
+<!--            <q-card-section>-->
+<!--              <q-card>-->
+<!--                sssss-->
+<!--              </q-card>-->
+<!--            </q-card-section>-->
 
           </q-card>
         </div>
@@ -438,13 +499,20 @@ export default {
       debugContent : '',
       debugOutContent: '',
       isVisible: false,
+      subIsVisible: false,
       isLoading: false,
       percentage: 0,
       isSubOrDegHeader: false,
       isDebug: false,
       subVisible: false,
-      subStatus: false,
+      subStatus: '',
       subComplieError: ''
+    })
+    const subWrongSample = reactive({
+      in: '',
+      out: '',
+      standardOut: '',
+      timeUsage: 0
     })
     let buttonState = reactive({
       subCon: false,
@@ -470,6 +538,7 @@ export default {
         SubOrDebug.isLoading = true
         SubOrDebug.isDebug = false
         SubOrDebug.isVisible = false
+        SubOrDebug.subIsVisible = true
         buttonDisable()
 
         var start= Date.now();
@@ -481,9 +550,13 @@ export default {
           code: cmadd.value,
           isDebug: false
         }).then((res) => {
-          if ("Accepted" === res.status) {
-            SubOrDebug.subStatus = true
-          }
+
+            SubOrDebug.subStatus = res.status
+          console.log("wrongSample:", res)
+          subWrongSample.in = JSON.parse(JSON.stringify(res.wrongSample.in))
+          subWrongSample.out = JSON.parse(JSON.stringify(res.wrongSample.out))
+          subWrongSample.standardOut = JSON.parse(JSON.stringify(res.wrongSample.standardOut))
+          subWrongSample.timeUsage = res.timeUsage
           SubOrDebug.subComplieError = res.compileError
         })
         var end= Date.now();
@@ -517,8 +590,12 @@ export default {
       SubOrDebug.isDebug = true
     }
 
-    function cloSubOrDeg() {
-      SubOrDebug.isVisible = false
+    function cloSubOrDeg(msg) {
+      if (msg === 'sub') {
+        SubOrDebug.subIsVisible = false
+      } else {
+        SubOrDebug.isVisible = false
+      }
     }
     watch(() => editor.settingOptions[0].value, (newValue, oldValue) => {
       if (newValue === null) {
@@ -783,7 +860,8 @@ function test() {
       type,
       cleanIcon,
       SubOrDebug,
-      problemId
+      problemId,
+      subWrongSample
     }
   },
 created() {
